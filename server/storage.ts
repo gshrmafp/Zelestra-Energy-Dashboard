@@ -5,6 +5,9 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  getUsers(filters: { search?: string; role?: string; page?: number; limit?: number }): Promise<{ users: User[]; total: number }>;
+  updateUser(id: number, user: Partial<InsertUser>): Promise<User>;
+  deleteUser(id: number): Promise<boolean>;
   
   // Project operations
   getProjects(filters: ProjectFilters): Promise<{ projects: Project[]; total: number }>;
@@ -67,6 +70,51 @@ export class MemStorage implements IStorage {
     };
     this.users.set(id, user);
     return user;
+  }
+
+  async getUsers(filters: { search?: string; role?: string; page?: number; limit?: number }): Promise<{ users: User[]; total: number }> {
+    let users = Array.from(this.users.values());
+
+    // Apply search filter
+    if (filters.search) {
+      const searchTerm = filters.search.toLowerCase();
+      users = users.filter(user => 
+        user.name.toLowerCase().includes(searchTerm) ||
+        user.email.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    // Apply role filter
+    if (filters.role) {
+      users = users.filter(user => user.role === filters.role);
+    }
+
+    const total = users.length;
+    
+    // Apply pagination
+    const page = filters.page || 1;
+    const limit = filters.limit || 10;
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    
+    users = users.slice(startIndex, endIndex);
+
+    return { users, total };
+  }
+
+  async updateUser(id: number, updateData: Partial<InsertUser>): Promise<User> {
+    const user = this.users.get(id);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const updatedUser = { ...user, ...updateData };
+    this.users.set(id, updatedUser);
+    return updatedUser;
+  }
+
+  async deleteUser(id: number): Promise<boolean> {
+    return this.users.delete(id);
   }
 
   async getProjects(filters: ProjectFilters): Promise<{ projects: Project[]; total: number }> {

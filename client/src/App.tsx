@@ -7,6 +7,11 @@ import { AuthProvider, useAuthContext } from "@/components/auth/auth-provider";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import LoginPage from "@/pages/login";
 import DashboardPage from "@/pages/dashboard";
+import ProjectsPage from "@/pages/projects";
+import AnalyticsPage from "@/pages/analytics";
+import LocationsPage from "@/pages/locations";
+import UsersPage from "@/pages/users";
+import SettingsPage from "@/pages/settings";
 import NotFound from "@/pages/not-found";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -26,6 +31,31 @@ function Router() {
       <Route path="/dashboard">
         <ProtectedRoute>
           <DashboardPage />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/projects">
+        <ProtectedRoute>
+          <ProjectsPage />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/analytics">
+        <ProtectedRoute>
+          <AnalyticsPage />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/locations">
+        <ProtectedRoute>
+          <LocationsPage />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/users">
+        <ProtectedRoute>
+          <UsersPage />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/settings">
+        <ProtectedRoute>
+          <SettingsPage />
         </ProtectedRoute>
       </Route>
       <Route path="/">

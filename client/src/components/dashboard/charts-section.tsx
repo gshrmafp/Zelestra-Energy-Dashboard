@@ -1,14 +1,19 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useChartData } from "@/hooks/use-projects";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { Calendar, TrendingUp, Eye } from "lucide-react";
 
 // Import Chart.js
 declare const Chart: any;
 
 export function ChartsSection() {
   const { data: chartData, isLoading } = useChartData();
+  const [capacityTimeRange, setCapacityTimeRange] = useState("monthly");
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const capacityChartRef = useRef<HTMLCanvasElement>(null);
   const distributionChartRef = useRef<HTMLCanvasElement>(null);
   const capacityChartInstance = useRef<any>(null);
@@ -30,20 +35,36 @@ export function ChartsSection() {
     }
 
     function initCharts() {
+      // Generate data based on time range
+      const generateCapacityData = () => {
+        if (capacityTimeRange === "yearly") {
+          return {
+            labels: ['2020', '2021', '2022', '2023', '2024'],
+            data: [800, 1200, 1600, 2100, 2800]
+          };
+        } else {
+          return {
+            labels: chartData.capacityTrends.map(d => d.month),
+            data: chartData.capacityTrends.map(d => d.capacity)
+          };
+        }
+      };
+
       // Capacity trends chart
       if (capacityChartRef.current) {
         if (capacityChartInstance.current) {
           capacityChartInstance.current.destroy();
         }
         
+        const capacityData = generateCapacityData();
         const ctx = capacityChartRef.current.getContext('2d');
         capacityChartInstance.current = new Chart(ctx, {
           type: 'line',
           data: {
-            labels: chartData.capacityTrends.map(d => d.month),
+            labels: capacityData.labels,
             datasets: [{
               label: 'Capacity (MW)',
-              data: chartData.capacityTrends.map(d => d.capacity),
+              data: capacityData.data,
               borderColor: '#1976D2',
               backgroundColor: 'rgba(25, 118, 210, 0.1)',
               tension: 0.4,
@@ -118,7 +139,7 @@ export function ChartsSection() {
         distributionChartInstance.current.destroy();
       }
     };
-  }, [chartData]);
+  }, [chartData, capacityTimeRange]);
 
   if (isLoading) {
     return (
@@ -139,23 +160,23 @@ export function ChartsSection() {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg font-semibold text-gray-900">
+            <CardTitle className="text-lg font-semibold text-gray-900 flex items-center">
+              <TrendingUp className="w-5 h-5 mr-2" />
               Capacity Trends
             </CardTitle>
-            <div className="flex space-x-2">
-              <Button 
-                variant="outline" 
-                size="sm"
-                className="text-sm px-3 py-1 bg-primary-100 text-primary-700 border-primary-200"
-              >
-                Monthly
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm"
-                className="text-sm px-3 py-1 text-gray-600 hover:bg-gray-100"
-              >
-                Yearly
+            <div className="flex items-center space-x-2">
+              <Select value={capacityTimeRange} onValueChange={setCapacityTimeRange}>
+                <SelectTrigger className="w-32">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="monthly">Monthly</SelectItem>
+                  <SelectItem value="yearly">Yearly</SelectItem>
+                </SelectContent>
+              </Select>
+              <Button variant="outline" size="sm">
+                <Calendar className="w-4 h-4 mr-1" />
+                Export
               </Button>
             </div>
           </div>
@@ -173,9 +194,44 @@ export function ChartsSection() {
             <CardTitle className="text-lg font-semibold text-gray-900">
               Energy Types Distribution
             </CardTitle>
-            <Button variant="ghost" size="sm" className="text-sm text-primary-500 hover:text-primary-600">
-              View Details
-            </Button>
+            <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Eye className="w-4 h-4 mr-1" />
+                  View Details
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>Energy Distribution Details</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {chartData.energyDistribution.map((item, index) => (
+                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <div 
+                            className="w-4 h-4 rounded-full" 
+                            style={{ backgroundColor: item.color }}
+                          ></div>
+                          <span className="font-medium">{item.type}</span>
+                        </div>
+                        <span className="text-lg font-semibold">{item.percentage}%</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="pt-4 border-t">
+                    <h4 className="font-medium mb-2">Key Insights:</h4>
+                    <ul className="space-y-1 text-sm text-gray-600">
+                      <li>• Solar energy leads with the highest capacity share</li>
+                      <li>• Wind energy shows strong growth potential</li>
+                      <li>• Hydro maintains steady operational efficiency</li>
+                      <li>• Diversified portfolio reduces dependency risks</li>
+                    </ul>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </CardHeader>
         <CardContent>

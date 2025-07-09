@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { authService } from "./services/auth";
 import { energyAPIService } from "./services/energy-api";
-import { loginSchema, projectFiltersSchema, insertProjectSchema } from "@shared/schema";
+import { loginSchema, projectFiltersSchema, insertProjectSchema, insertUserSchema } from "@shared/schema";
 import { z } from "zod";
 
 // Middleware to verify JWT token
@@ -162,6 +162,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
+    }
+  });
+
+  // User management routes (admin only)
+  app.get("/api/users", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      const query = { ...req.query };
+      
+      // Convert page and limit to numbers
+      if (query.page) query.page = parseInt(query.page);
+      if (query.limit) query.limit = parseInt(query.limit);
+      
+      const users = await storage.getUsers(query);
+      res.json(users);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/users", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      const userData = insertUserSchema.parse(req.body);
+      const user = await storage.createUser(userData);
+      res.status(201).json(user);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/users/:id", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const userData = insertUserSchema.partial().parse(req.body);
+      const user = await storage.updateUser(id, userData);
+      res.json(user);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.delete("/api/users/:id", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteUser(id);
+      res.json({ message: "User deleted successfully" });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
     }
   });
 
