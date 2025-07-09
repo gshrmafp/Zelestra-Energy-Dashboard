@@ -57,6 +57,16 @@ Preferred communication style: Simple, everyday language.
 - Search functionality across project data
 - Admin-only project creation and deletion
 
+## Recent Changes
+
+### January 2025 Updates
+- **Fixed Authentication Issues**: Resolved project creation and deletion authentication problems by updating API request functions to include JWT tokens
+- **Added Indian Sample Data**: Added comprehensive sample data with 15+ Indian renewable energy projects including major solar parks, wind farms, and hydro projects
+- **Enhanced User Database**: Added 8 additional Indian users with realistic company affiliations (Adani, SECI, Suzlon, KPCL, THDC, etc.)
+- **Implemented Export Functionality**: Added CSV export feature for projects (admin-only) with proper authentication
+- **Updated Location Constants**: Added comprehensive list of Indian states and locations for better localization
+- **Improved Data Authenticity**: All sample projects now use real Indian renewable energy project data with accurate locations and capacities
+
 ## Data Flow
 
 1. **Authentication Flow**:

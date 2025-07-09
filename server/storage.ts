@@ -48,6 +48,63 @@ export class MemStorage implements IStorage {
       role: "user"
     });
 
+    // Additional Indian users
+    this.createUser({
+      name: "Rajesh Kumar",
+      email: "rajesh.kumar@adani.com",
+      password: "rajesh123",
+      role: "admin",
+    });
+
+    this.createUser({
+      name: "Priya Sharma",
+      email: "priya.sharma@seci.co.in",
+      password: "priya123",
+      role: "user",
+    });
+
+    this.createUser({
+      name: "Amit Patel",
+      email: "amit.patel@suzlon.com",
+      password: "amit123",
+      role: "user",
+    });
+
+    this.createUser({
+      name: "Sunita Reddy",
+      email: "sunita.reddy@kpcl.gov.in",
+      password: "sunita123",
+      role: "user",
+    });
+
+    this.createUser({
+      name: "Vikram Singh",
+      email: "vikram.singh@thdc.co.in",
+      password: "vikram123",
+      role: "admin",
+    });
+
+    this.createUser({
+      name: "Meera Gupta",
+      email: "meera.gupta@upreda.up.gov.in",
+      password: "meera123",
+      role: "user",
+    });
+
+    this.createUser({
+      name: "Ravi Krishnan",
+      email: "ravi.krishnan@tangedco.gov.in",
+      password: "ravi123",
+      role: "user",
+    });
+
+    this.createUser({
+      name: "Kavitha Nair",
+      email: "kavitha.nair@niwe.res.in",
+      password: "kavitha123",
+      role: "admin",
+    });
+
     // Initialize with sample projects
     this.initializeSampleProjects();
   }
@@ -249,60 +306,175 @@ export class MemStorage implements IStorage {
 
   private async initializeSampleProjects() {
     const sampleProjects = [
+      // Solar Projects in India
       {
-        name: "Desert Sun Solar Farm",
-        owner: "SolarTech Industries",
+        name: "Rajasthan Solar Park",
+        owner: "Adani Solar",
         energyType: "Solar",
-        capacity: "150.5",
-        location: "California, USA",
+        capacity: "648.0",
+        location: "Jodhpur, Rajasthan",
         status: "Operational",
         year: 2023,
-        latitude: "34.0522",
-        longitude: "-118.2437",
+        latitude: "26.2389",
+        longitude: "73.0243",
       },
       {
-        name: "Windmere Wind Farm",
-        owner: "Green Energy Corp",
+        name: "Kamuthi Solar Power Project",
+        owner: "Adani Green Energy",
+        energyType: "Solar",
+        capacity: "648.0",
+        location: "Kamuthi, Tamil Nadu",
+        status: "Operational",
+        year: 2016,
+        latitude: "9.4004",
+        longitude: "78.4479",
+      },
+      {
+        name: "Pavagada Solar Park",
+        owner: "Karnataka Solar Power Development Corporation",
+        energyType: "Solar",
+        capacity: "2050.0",
+        location: "Pavagada, Karnataka",
+        status: "Operational",
+        year: 2019,
+        latitude: "14.1009",
+        longitude: "77.2773",
+      },
+      {
+        name: "Kurnool Ultra Mega Solar Park",
+        owner: "Andhra Pradesh Solar Power Corporation",
+        energyType: "Solar",
+        capacity: "1000.0",
+        location: "Kurnool, Andhra Pradesh",
+        status: "Operational",
+        year: 2017,
+        latitude: "15.8281",
+        longitude: "78.0373",
+      },
+      {
+        name: "Rewa Ultra Mega Solar Park",
+        owner: "Rewa Ultra Mega Solar Limited",
+        energyType: "Solar",
+        capacity: "750.0",
+        location: "Rewa, Madhya Pradesh",
+        status: "Operational",
+        year: 2020,
+        latitude: "24.5318",
+        longitude: "81.2961",
+      },
+      // Wind Projects in India
+      {
+        name: "Jaisalmer Wind Park",
+        owner: "Suzlon Energy",
         energyType: "Wind",
-        capacity: "240.0",
-        location: "Texas, USA",
-        status: "Construction",
-        year: 2024,
-        latitude: "31.9686",
-        longitude: "-99.9018",
-      },
-      {
-        name: "Cascade Hydro Plant",
-        owner: "Hydro Power Inc",
-        energyType: "Hydro",
-        capacity: "85.2",
-        location: "Oregon, USA",
+        capacity: "1064.0",
+        location: "Jaisalmer, Rajasthan",
         status: "Operational",
         year: 2022,
-        latitude: "44.9778",
-        longitude: "-123.0351",
+        latitude: "26.9157",
+        longitude: "70.9083",
       },
       {
-        name: "Mountain Wind Project",
-        owner: "WindTech Solutions",
+        name: "Muppandal Wind Farm",
+        owner: "Tamil Nadu Energy Development Agency",
         energyType: "Wind",
-        capacity: "320.0",
-        location: "Colorado, USA",
+        capacity: "1500.0",
+        location: "Kanyakumari, Tamil Nadu",
+        status: "Operational",
+        year: 2021,
+        latitude: "8.4004",
+        longitude: "77.4479",
+      },
+      {
+        name: "Gujarat Wind Park",
+        owner: "Adani Green Energy",
+        energyType: "Wind",
+        capacity: "410.0",
+        location: "Kutch, Gujarat",
+        status: "Construction",
+        year: 2024,
+        latitude: "23.7337",
+        longitude: "69.8597",
+      },
+      // Hydro Projects in India
+      {
+        name: "Tehri Dam Hydro Project",
+        owner: "Tehri Hydro Development Corporation",
+        energyType: "Hydro",
+        capacity: "1000.0",
+        location: "Tehri, Uttarakhand",
+        status: "Operational",
+        year: 2006,
+        latitude: "30.3753",
+        longitude: "78.4804",
+      },
+      {
+        name: "Bhakra Nangal Dam",
+        owner: "Bhakra Beas Management Board",
+        energyType: "Hydro",
+        capacity: "1325.0",
+        location: "Bilaspur, Himachal Pradesh",
+        status: "Operational",
+        year: 1963,
+        latitude: "31.4154",
+        longitude: "76.4348",
+      },
+      {
+        name: "Sardar Sarovar Dam",
+        owner: "Narmada Valley Development Authority",
+        energyType: "Hydro",
+        capacity: "1450.0",
+        location: "Kevadia, Gujarat",
+        status: "Operational",
+        year: 2017,
+        latitude: "21.8333",
+        longitude: "73.7500",
+      },
+      // Biomass Projects in India
+      {
+        name: "Punjab Biomass Power Plant",
+        owner: "Punjab Renewable Energy Systems",
+        energyType: "Biomass",
+        capacity: "12.0",
+        location: "Ludhiana, Punjab",
+        status: "Operational",
+        year: 2020,
+        latitude: "30.9010",
+        longitude: "75.8573",
+      },
+      {
+        name: "Uttar Pradesh Biomass Plant",
+        owner: "Uttar Pradesh New & Renewable Energy Development Agency",
+        energyType: "Biomass",
+        capacity: "15.0",
+        location: "Muzaffarnagar, Uttar Pradesh",
+        status: "Construction",
+        year: 2024,
+        latitude: "29.4727",
+        longitude: "77.7085",
+      },
+      // Recent Projects
+      {
+        name: "Ladakh Solar Project",
+        owner: "Solar Energy Corporation of India",
+        energyType: "Solar",
+        capacity: "7500.0",
+        location: "Ladakh, Jammu & Kashmir",
         status: "Planning",
         year: 2025,
-        latitude: "39.7392",
-        longitude: "-104.9903",
+        latitude: "34.1526",
+        longitude: "77.5771",
       },
       {
-        name: "Coastal Solar Array",
-        owner: "Ocean Energy LLC",
-        energyType: "Solar",
-        capacity: "95.8",
-        location: "Florida, USA",
-        status: "Operational",
-        year: 2023,
-        latitude: "25.7617",
-        longitude: "-80.1918",
+        name: "Offshore Wind Project Mumbai",
+        owner: "National Institute of Wind Energy",
+        energyType: "Wind",
+        capacity: "1000.0",
+        location: "Mumbai, Maharashtra",
+        status: "Planning",
+        year: 2026,
+        latitude: "19.0760",
+        longitude: "72.8777",
       },
     ];
 

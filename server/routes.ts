@@ -212,6 +212,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Export projects route (admin only)
+  app.get("/api/projects/export", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      const { projects } = await storage.getProjects({});
+      
+      // Generate CSV format
+      const csvHeaders = "Name,Owner,Energy Type,Capacity (MW),Location,Status,Year,Latitude,Longitude\n";
+      const csvData = projects.map(p => 
+        `"${p.name}","${p.owner}","${p.energyType}","${p.capacity}","${p.location}","${p.status}","${p.year}","${p.latitude || ''}","${p.longitude || ''}"`
+      ).join('\n');
+      
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename="renewable_energy_projects.csv"');
+      res.send(csvHeaders + csvData);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // External API sync route (admin only)
   app.post("/api/sync/external", authenticateToken, requireAdmin, async (req: any, res) => {
     try {

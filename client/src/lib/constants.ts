@@ -14,12 +14,23 @@ export const PROJECT_STATUSES = [
 ] as const;
 
 export const LOCATIONS = [
-  { value: "california", label: "California" },
-  { value: "texas", label: "Texas" },
-  { value: "florida", label: "Florida" },
-  { value: "new-york", label: "New York" },
-  { value: "oregon", label: "Oregon" },
-  { value: "washington", label: "Washington" },
+  { value: "rajasthan", label: "Rajasthan" },
+  { value: "tamil-nadu", label: "Tamil Nadu" },
+  { value: "karnataka", label: "Karnataka" },
+  { value: "andhra-pradesh", label: "Andhra Pradesh" },
+  { value: "gujarat", label: "Gujarat" },
+  { value: "maharashtra", label: "Maharashtra" },
+  { value: "madhya-pradesh", label: "Madhya Pradesh" },
+  { value: "uttar-pradesh", label: "Uttar Pradesh" },
+  { value: "punjab", label: "Punjab" },
+  { value: "himachal-pradesh", label: "Himachal Pradesh" },
+  { value: "uttarakhand", label: "Uttarakhand" },
+  { value: "jammu-kashmir", label: "Jammu & Kashmir" },
+  { value: "west-bengal", label: "West Bengal" },
+  { value: "odisha", label: "Odisha" },
+  { value: "haryana", label: "Haryana" },
+  { value: "kerala", label: "Kerala" },
+  { value: "telangana", label: "Telangana" },
 ] as const;
 
 export const SORT_OPTIONS = [

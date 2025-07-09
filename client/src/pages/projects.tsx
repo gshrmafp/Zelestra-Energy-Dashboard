@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus } from "lucide-react";
+import { Plus, Download } from "lucide-react";
 import { NavigationHeader } from "@/components/dashboard/navigation-header";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { ProjectsTable } from "@/components/dashboard/projects-table";
@@ -7,11 +7,47 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ProjectForm } from "@/components/projects/project-form";
 import { useAuthContext } from "@/components/auth/auth-provider";
+import { getAuthHeaders } from "@/lib/auth";
+import { useToast } from "@/hooks/use-toast";
 
 export default function ProjectsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const { isAdmin } = useAuthContext();
+  const { toast } = useToast();
+
+  const handleExport = async () => {
+    try {
+      const response = await fetch('/api/projects/export', {
+        headers: getAuthHeaders(),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Export failed');
+      }
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'renewable_energy_projects.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      
+      toast({
+        title: "Export successful",
+        description: "Projects exported to CSV file",
+      });
+    } catch (error) {
+      toast({
+        title: "Export failed",
+        description: "Failed to export projects",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -30,9 +66,12 @@ export default function ProjectsPage() {
                 <p className="text-gray-600 mt-1">Manage renewable energy projects</p>
               </div>
               <div className="mt-4 md:mt-0 flex space-x-3">
-                <Button variant="outline">
-                  Export Projects
-                </Button>
+                {isAdmin && (
+                  <Button variant="outline" onClick={handleExport}>
+                    <Download className="w-4 h-4 mr-2" />
+                    Export Projects
+                  </Button>
+                )}
                 {isAdmin && (
                   <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
                     <DialogTrigger asChild>
