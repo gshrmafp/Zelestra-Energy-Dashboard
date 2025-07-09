@@ -51,7 +51,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Project routes
   app.get("/api/projects", authenticateToken, async (req: any, res) => {
     try {
-      const filters = projectFiltersSchema.parse(req.query);
+      // Parse query parameters properly
+      const query = { ...req.query };
+      
+      // Convert page and limit to numbers
+      if (query.page) query.page = parseInt(query.page);
+      if (query.limit) query.limit = parseInt(query.limit);
+      
+      const filters = projectFiltersSchema.parse(query);
       const result = await storage.getProjects(filters);
       res.json(result);
     } catch (error: any) {

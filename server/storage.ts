@@ -44,6 +44,9 @@ export class MemStorage implements IStorage {
       name: "Regular User",
       role: "user"
     });
+
+    // Initialize with sample projects
+    this.initializeSampleProjects();
   }
 
   async getUser(id: number): Promise<User | undefined> {
@@ -59,6 +62,7 @@ export class MemStorage implements IStorage {
     const user: User = {
       ...insertUser,
       id,
+      role: insertUser.role || "user",
       createdAt: new Date(),
     };
     this.users.set(id, user);
@@ -151,6 +155,8 @@ export class MemStorage implements IStorage {
     const project: Project = {
       ...insertProject,
       id,
+      latitude: insertProject.latitude || null,
+      longitude: insertProject.longitude || null,
       createdAt: new Date(),
     };
     this.projects.set(id, project);
@@ -191,6 +197,70 @@ export class MemStorage implements IStorage {
         operational: 3,
       },
     };
+  }
+
+  private async initializeSampleProjects() {
+    const sampleProjects = [
+      {
+        name: "Desert Sun Solar Farm",
+        owner: "SolarTech Industries",
+        energyType: "Solar",
+        capacity: "150.5",
+        location: "California, USA",
+        status: "Operational",
+        year: 2023,
+        latitude: "34.0522",
+        longitude: "-118.2437",
+      },
+      {
+        name: "Windmere Wind Farm",
+        owner: "Green Energy Corp",
+        energyType: "Wind",
+        capacity: "240.0",
+        location: "Texas, USA",
+        status: "Construction",
+        year: 2024,
+        latitude: "31.9686",
+        longitude: "-99.9018",
+      },
+      {
+        name: "Cascade Hydro Plant",
+        owner: "Hydro Power Inc",
+        energyType: "Hydro",
+        capacity: "85.2",
+        location: "Oregon, USA",
+        status: "Operational",
+        year: 2022,
+        latitude: "44.9778",
+        longitude: "-123.0351",
+      },
+      {
+        name: "Mountain Wind Project",
+        owner: "WindTech Solutions",
+        energyType: "Wind",
+        capacity: "320.0",
+        location: "Colorado, USA",
+        status: "Planning",
+        year: 2025,
+        latitude: "39.7392",
+        longitude: "-104.9903",
+      },
+      {
+        name: "Coastal Solar Array",
+        owner: "Ocean Energy LLC",
+        energyType: "Solar",
+        capacity: "95.8",
+        location: "Florida, USA",
+        status: "Operational",
+        year: 2023,
+        latitude: "25.7617",
+        longitude: "-80.1918",
+      },
+    ];
+
+    for (const project of sampleProjects) {
+      await this.createProject(project);
+    }
   }
 }
 

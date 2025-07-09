@@ -95,12 +95,12 @@ export function ProjectsTable({ searchQuery }: ProjectsTableProps) {
           </CardTitle>
           
           <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4">
-            <Select value={filters.energyType || ""} onValueChange={(value) => handleFilterChange("energyType", value)}>
+            <Select value={filters.energyType || "all"} onValueChange={(value) => handleFilterChange("energyType", value === "all" ? "" : value)}>
               <SelectTrigger className="w-full md:w-auto">
                 <SelectValue placeholder="All Energy Types" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Energy Types</SelectItem>
+                <SelectItem value="all">All Energy Types</SelectItem>
                 {ENERGY_TYPES.map(type => (
                   <SelectItem key={type.value} value={type.value}>
                     {type.label}
@@ -109,12 +109,12 @@ export function ProjectsTable({ searchQuery }: ProjectsTableProps) {
               </SelectContent>
             </Select>
             
-            <Select value={filters.status || ""} onValueChange={(value) => handleFilterChange("status", value)}>
+            <Select value={filters.status || "all"} onValueChange={(value) => handleFilterChange("status", value === "all" ? "" : value)}>
               <SelectTrigger className="w-full md:w-auto">
                 <SelectValue placeholder="All Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Status</SelectItem>
+                <SelectItem value="all">All Status</SelectItem>
                 {PROJECT_STATUSES.map(status => (
                   <SelectItem key={status.value} value={status.value}>
                     {status.label}
@@ -123,12 +123,12 @@ export function ProjectsTable({ searchQuery }: ProjectsTableProps) {
               </SelectContent>
             </Select>
             
-            <Select value={filters.location || ""} onValueChange={(value) => handleFilterChange("location", value)}>
+            <Select value={filters.location || "all"} onValueChange={(value) => handleFilterChange("location", value === "all" ? "" : value)}>
               <SelectTrigger className="w-full md:w-auto">
                 <SelectValue placeholder="All Locations" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Locations</SelectItem>
+                <SelectItem value="all">All Locations</SelectItem>
                 {LOCATIONS.map(location => (
                   <SelectItem key={location.value} value={location.value}>
                     {location.label}
