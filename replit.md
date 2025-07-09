@@ -66,6 +66,10 @@ Preferred communication style: Simple, everyday language.
 - **Implemented Export Functionality**: Added CSV export feature for projects (admin-only) with proper authentication
 - **Updated Location Constants**: Added comprehensive list of Indian states and locations for better localization
 - **Improved Data Authenticity**: All sample projects now use real Indian renewable energy project data with accurate locations and capacities
+- **Rebranded to Zelestra Energy**: Updated company name and logo throughout the application
+- **Fixed Dashboard Project Management**: Added project creation, editing, and deletion functionality with proper modal dialogs
+- **Implemented User Role Management**: Added admin capability to edit user roles and permissions
+- **Added Comprehensive CRUD Operations**: Full project and user management with proper authentication and authorization
 
 ## Data Flow
 

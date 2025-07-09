@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { Search, Bell, ChevronDown, Zap } from "lucide-react";
+import { Search, Bell, ChevronDown, Zap, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuthContext } from "@/components/auth/auth-provider";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,13 +17,40 @@ interface NavigationHeaderProps {
 }
 
 export function NavigationHeader({ onSearchChange }: NavigationHeaderProps) {
-  const { user, logout } = useAuthContext();
+  const { user, logout, isAdmin } = useAuthContext();
   const [searchQuery, setSearchQuery] = useState("");
+  const { toast } = useToast();
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchQuery(value);
     onSearchChange(value);
+  };
+
+  const handleExport = async () => {
+    try {
+      const response = await apiRequest("GET", "/api/export/projects");
+      const blob = new Blob([response.body], { type: "text/csv" });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `projects_${new Date().toISOString().split("T")[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      
+      toast({
+        title: "Export successful",
+        description: "Projects data has been exported to CSV",
+      });
+    } catch (error) {
+      toast({
+        title: "Export failed",
+        description: "Failed to export projects data",
+        variant: "destructive",
+      });
+    }
   };
 
   const getUserInitials = (name: string) => {
@@ -44,7 +73,7 @@ export function NavigationHeader({ onSearchChange }: NavigationHeaderProps) {
             </div>
             <div className="ml-4">
               <h1 className="text-lg font-semibold text-gray-900">
-                Energy Data Platform
+                Zelestra Energy
               </h1>
             </div>
           </div>
@@ -75,6 +104,18 @@ export function NavigationHeader({ onSearchChange }: NavigationHeaderProps) {
                 3
               </span>
             </Button>
+
+            {isAdmin && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleExport}
+                className="flex items-center space-x-2"
+              >
+                <Download className="w-4 h-4" />
+                <span>Export</span>
+              </Button>
+            )}
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

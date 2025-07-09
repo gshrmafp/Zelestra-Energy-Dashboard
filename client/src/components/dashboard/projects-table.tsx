@@ -1,13 +1,15 @@
 import { useState } from "react";
-import { ChevronUp, ChevronDown, Eye, Edit, Trash2 } from "lucide-react";
+import { ChevronUp, ChevronDown, Eye, Edit, Trash2, Plus } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useProjects } from "@/hooks/use-projects";
 import { useAuthContext } from "@/components/auth/auth-provider";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { ProjectFilters } from "@shared/schema";
+import { ProjectForm } from "@/components/projects/project-form";
+import { ProjectFilters, Project } from "@shared/schema";
 import { ENERGY_TYPES, PROJECT_STATUSES, LOCATIONS, SORT_OPTIONS, ITEMS_PER_PAGE } from "@/lib/constants";
 
 interface ProjectsTableProps {
@@ -21,6 +23,9 @@ export function ProjectsTable({ searchQuery }: ProjectsTableProps) {
     limit: ITEMS_PER_PAGE,
     search: searchQuery || "",
   });
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   const { projects, total, isLoading, deleteProject, isDeleting } = useProjects(filters);
 
@@ -49,6 +54,20 @@ export function ProjectsTable({ searchQuery }: ProjectsTableProps) {
     if (confirm("Are you sure you want to delete this project?")) {
       deleteProject(id);
     }
+  };
+
+  const handleEdit = (project: Project) => {
+    setSelectedProject(project);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleEditSuccess = () => {
+    setIsEditDialogOpen(false);
+    setSelectedProject(null);
+  };
+
+  const handleCreateSuccess = () => {
+    setIsCreateDialogOpen(false);
   };
 
   // Update search when prop changes
@@ -93,6 +112,23 @@ export function ProjectsTable({ searchQuery }: ProjectsTableProps) {
           <CardTitle className="text-lg font-semibold text-gray-900 mb-4 md:mb-0">
             Renewable Energy Projects
           </CardTitle>
+          
+          {isAdmin && (
+            <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="bg-primary-500 hover:bg-primary-600">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Project
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>Create New Project</DialogTitle>
+                </DialogHeader>
+                <ProjectForm onSuccess={handleCreateSuccess} />
+              </DialogContent>
+            </Dialog>
+          )}
           
           <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4">
             <Select value={filters.energyType || "all"} onValueChange={(value) => handleFilterChange("energyType", value === "all" ? "" : value)}>
@@ -242,7 +278,7 @@ export function ProjectsTable({ searchQuery }: ProjectsTableProps) {
                       </Button>
                       {isAdmin && (
                         <>
-                          <Button variant="ghost" size="sm">
+                          <Button variant="ghost" size="sm" onClick={() => handleEdit(project)}>
                             <Edit className="w-4 h-4" />
                           </Button>
                           <Button 
@@ -332,6 +368,21 @@ export function ProjectsTable({ searchQuery }: ProjectsTableProps) {
           </div>
         </div>
       </CardContent>
+      
+      {/* Edit Dialog */}
+      {selectedProject && (
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Edit Project</DialogTitle>
+            </DialogHeader>
+            <ProjectForm 
+              project={selectedProject} 
+              onSuccess={handleEditSuccess} 
+            />
+          </DialogContent>
+        </Dialog>
+      )}
     </Card>
   );
 }

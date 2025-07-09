@@ -32,6 +32,9 @@ const requireAdmin = (req: any, res: any, next: any) => {
   next();
 };
 
+// Shorter aliases for convenience
+const requireAuth = authenticateToken;
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Authentication routes
   app.post("/api/auth/login", async (req, res) => {
@@ -114,6 +117,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ message: "Project deleted successfully" });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Export projects to CSV (admin only)
+  app.get("/api/export/projects", requireAuth, requireAdmin, async (req: any, res) => {
+    try {
+      const { projects } = await storage.getProjects({});
+      
+      const csvHeader = "Name,Owner,Energy Type,Capacity (MW),Location,Status,Year,Latitude,Longitude\n";
+      const csvData = projects.map(project => 
+        `"${project.name}","${project.owner}","${project.energyType}","${project.capacity}","${project.location}","${project.status}","${project.year}","${project.latitude || ''}","${project.longitude || ''}"`
+      ).join("\n");
+      
+      const csv = csvHeader + csvData;
+      
+      res.setHeader("Content-Type", "text/csv");
+      res.setHeader("Content-Disposition", `attachment; filename="projects_${new Date().toISOString().split('T')[0]}.csv"`);
+      res.send(csv);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
     }
   });
 

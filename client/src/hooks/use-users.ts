@@ -58,47 +58,7 @@ export function useUsers(filters: UsersFilters = {}) {
     },
   });
 
-  const updateUserMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: number; data: Partial<InsertUser> }) => {
-      const response = await apiRequest("PUT", `/api/users/${id}`, data);
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/users"] });
-      toast({
-        title: "User updated",
-        description: "The user has been updated successfully",
-      });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Error updating user",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
 
-  const deleteUserMutation = useMutation({
-    mutationFn: async (id: number) => {
-      const response = await apiRequest("DELETE", `/api/users/${id}`);
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/users"] });
-      toast({
-        title: "User deleted",
-        description: "The user has been deleted successfully",
-      });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Error deleting user",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
 
   return {
     users: usersQuery.data?.users || [],

@@ -2,9 +2,12 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useUsers } from "@/hooks/use-users";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { UserEditForm } from "./user-edit-form";
 import { Edit, Trash2, User } from "lucide-react";
+import { User as UserType } from "@shared/schema";
 
 interface UsersTableProps {
   searchQuery: string;
@@ -12,11 +15,23 @@ interface UsersTableProps {
 
 export function UsersTable({ searchQuery }: UsersTableProps) {
   const { users, isLoading, deleteUser, isDeleting } = useUsers({ search: searchQuery });
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
 
   const handleDelete = (id: number) => {
     if (confirm("Are you sure you want to delete this user?")) {
       deleteUser(id);
     }
+  };
+
+  const handleEdit = (user: UserType) => {
+    setSelectedUser(user);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleEditSuccess = () => {
+    setIsEditDialogOpen(false);
+    setSelectedUser(null);
   };
 
   const getRoleBadge = (role: string) => {
@@ -106,7 +121,7 @@ export function UsersTable({ searchQuery }: UsersTableProps) {
                       {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                      <Button variant="ghost" size="sm">
+                      <Button variant="ghost" size="sm" onClick={() => handleEdit(user)}>
                         <Edit className="w-4 h-4" />
                       </Button>
                       <Button 
@@ -125,6 +140,21 @@ export function UsersTable({ searchQuery }: UsersTableProps) {
           </table>
         </div>
       </CardContent>
+      
+      {/* Edit Dialog */}
+      {selectedUser && (
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Edit User</DialogTitle>
+            </DialogHeader>
+            <UserEditForm 
+              user={selectedUser} 
+              onSuccess={handleEditSuccess} 
+            />
+          </DialogContent>
+        </Dialog>
+      )}
     </Card>
   );
 }
