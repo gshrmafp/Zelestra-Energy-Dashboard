@@ -5,6 +5,7 @@ import { authService } from "./services/auth";
 import { energyAPIService } from "./services/energy-api";
 import { loginSchema, projectFiltersSchema, insertProjectSchema, insertUserSchema } from "@shared/schema";
 import { z } from "zod";
+import { createProjectsExcel } from "./utils/excel";
 
 // Middleware to verify JWT token
 const authenticateToken = async (req: any, res: any, next: any) => {
@@ -139,6 +140,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: error.message });
     }
   });
+  
+  // Export projects to Excel (admin only)
+  app.get("/api/export/projects/excel", requireAuth, requireAdmin, async (req: any, res) => {
+    try {
+      const { projects } = await storage.getProjects({});
+      const { createProjectsExcel } = await import('./utils/excel');
+      
+      const buffer = await createProjectsExcel(projects);
+      
+      res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+      res.setHeader("Content-Disposition", `attachment; filename="projects_${new Date().toISOString().split('T')[0]}.xlsx"`);
+      res.send(buffer);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
 
   // Statistics route
   app.get("/api/stats", authenticateToken, async (req: any, res) => {
@@ -249,6 +266,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.setHeader('Content-Type', 'text/csv');
       res.setHeader('Content-Disposition', 'attachment; filename="renewable_energy_projects.csv"');
       res.send(csvHeaders + csvData);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+  
+  // Export projects as Excel (admin only)
+  app.get("/api/projects/export/excel", authenticateToken, async (req: any, res) => {
+    try {
+      const { projects } = await storage.getProjects({});
+      
+      // Use the Excel utility to create an Excel file
+      const buffer = await createProjectsExcel(projects);
+      
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', 'attachment; filename="renewable_energy_projects.xlsx"');
+      res.send(buffer);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }

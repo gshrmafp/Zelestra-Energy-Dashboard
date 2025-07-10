@@ -16,9 +16,10 @@ export default function ProjectsPage() {
   const { isAdmin } = useAuthContext();
   const { toast } = useToast();
 
-  const handleExport = async () => {
+  const handleExport = async (format: 'csv' | 'excel' = 'csv') => {
     try {
-      const response = await fetch('/api/projects/export', {
+      const endpoint = format === 'excel' ? '/api/export/projects/excel' : '/api/export/projects';
+      const response = await fetch(endpoint, {
         headers: getAuthHeaders(),
       });
       
@@ -30,7 +31,9 @@ export default function ProjectsPage() {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'renewable_energy_projects.csv';
+      a.download = format === 'excel' 
+        ? `renewable_energy_projects_${new Date().toISOString().split('T')[0]}.xlsx` 
+        : `renewable_energy_projects_${new Date().toISOString().split('T')[0]}.csv`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -38,7 +41,7 @@ export default function ProjectsPage() {
       
       toast({
         title: "Export successful",
-        description: "Projects exported to CSV file",
+        description: `Projects exported to ${format.toUpperCase()} file`,
       });
     } catch (error) {
       toast({

@@ -30,7 +30,8 @@ export function NavigationHeader({ onSearchChange }: NavigationHeaderProps) {
   const handleExport = async () => {
     try {
       const response = await apiRequest("GET", "/api/export/projects");
-      const blob = new Blob([response.body], { type: "text/csv" });
+      const text = await response.text();
+      const blob = new Blob([text], { type: "text/csv" });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;

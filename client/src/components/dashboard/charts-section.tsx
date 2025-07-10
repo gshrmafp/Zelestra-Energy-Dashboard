@@ -5,7 +5,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useChartData } from "@/hooks/use-projects";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { Calendar, TrendingUp, Eye } from "lucide-react";
+import { Calendar, TrendingUp, Eye, FileSpreadsheet, Download } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
+import { getAuthHeaders } from "@/lib/auth";
 
 // Import Chart.js
 declare const Chart: any;
@@ -18,6 +20,45 @@ export function ChartsSection() {
   const distributionChartRef = useRef<HTMLCanvasElement>(null);
   const capacityChartInstance = useRef<any>(null);
   const distributionChartInstance = useRef<any>(null);
+
+  // Function to handle Excel export
+  const handleExcelExport = async () => {
+    try {
+      const headers = getAuthHeaders();
+      const response = await fetch('/api/projects/export/excel', {
+        headers
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to export data');
+      }
+      
+      // Get the blob from the response
+      const blob = await response.blob();
+      
+      // Create a download link and trigger download
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = 'renewable_energy_projects.xlsx';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      
+      toast({
+        title: "Export Successful",
+        description: "Data has been exported to Excel format.",
+      });
+    } catch (error) {
+      console.error('Export error:', error);
+      toast({
+        title: "Export Failed",
+        description: "Could not export data to Excel. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   useEffect(() => {
     if (!chartData) return;
@@ -44,8 +85,8 @@ export function ChartsSection() {
           };
         } else {
           return {
-            labels: chartData.capacityTrends.map(d => d.month),
-            data: chartData.capacityTrends.map(d => d.capacity)
+            labels: chartData.capacityTrends.map((d: {month: string; capacity: number}) => d.month),
+            data: chartData.capacityTrends.map((d: {month: string; capacity: number}) => d.capacity)
           };
         }
       };
@@ -106,10 +147,10 @@ export function ChartsSection() {
         distributionChartInstance.current = new Chart(ctx, {
           type: 'doughnut',
           data: {
-            labels: chartData.energyDistribution.map(d => d.type),
+            labels: chartData.energyDistribution.map((d: {type: string; percentage: number; color: string}) => d.type),
             datasets: [{
-              data: chartData.energyDistribution.map(d => d.percentage),
-              backgroundColor: chartData.energyDistribution.map(d => d.color),
+              data: chartData.energyDistribution.map((d: {type: string; percentage: number; color: string}) => d.percentage),
+              backgroundColor: chartData.energyDistribution.map((d: {type: string; percentage: number; color: string}) => d.color),
               borderWidth: 2,
               borderColor: '#ffffff'
             }]
@@ -174,8 +215,8 @@ export function ChartsSection() {
                   <SelectItem value="yearly">Yearly</SelectItem>
                 </SelectContent>
               </Select>
-              <Button variant="outline" size="sm">
-                <Calendar className="w-4 h-4 mr-1" />
+              <Button variant="outline" size="sm" onClick={handleExcelExport}>
+                <Download className="w-4 h-4 mr-1" />
                 Export
               </Button>
             </div>
@@ -207,7 +248,7 @@ export function ChartsSection() {
                 </DialogHeader>
                 <div className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {chartData.energyDistribution.map((item, index) => (
+                    {chartData.energyDistribution.map((item: {type: string; percentage: number; color: string}, index: number) => (
                       <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                         <div className="flex items-center space-x-3">
                           <div 
