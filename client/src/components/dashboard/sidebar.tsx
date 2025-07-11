@@ -8,6 +8,7 @@ import {
   Settings 
 } from "lucide-react";
 import { useAuthContext } from "@/components/auth/auth-provider";
+import zelestraLogo from "@/assets/images/zelestra.png";
 
 export function Sidebar() {
   const [location] = useLocation();
@@ -32,7 +33,7 @@ export function Sidebar() {
       <div className="px-6 py-4 border-b border-gray-200">
         <div className="flex items-center space-x-3">
           <img 
-            src="/attached_assets/image_1752044667179.png" 
+            src={zelestraLogo} 
             alt="Zelestra Energy" 
             className="h-8 w-8"
           />
