@@ -1,15 +1,15 @@
 import Excel from 'exceljs';
-import { Project } from '@shared/schema';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
+import { IProject } from '../models/project.model';
 
 /**
  * Creates an Excel file from a list of projects
  * @param projects List of projects to export
  * @returns Buffer containing the Excel file
  */
-export async function createProjectsExcel(projects: Project[]): Promise<Buffer> {
+export async function createProjectsExcel(projects: IProject[]): Promise<any> {
   // Create a new workbook
   const workbook = new Excel.Workbook();
   const worksheet = workbook.addWorksheet('Projects');

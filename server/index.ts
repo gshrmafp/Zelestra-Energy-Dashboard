@@ -1,6 +1,30 @@
+// Load env variables first before any other imports
+import dotenv from "dotenv";
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Get the directory name of the current module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load environment variables from the .env file in the project root
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import mongoose from "mongoose";
+
+const mongoUri = process.env.MONGODB_URI as string;
+
+mongoose.connect(mongoUri)
+  .then(() => {
+    console.log("Connected to MongoDB Atlas");
+    // Start your server here
+  })
+  .catch((err) => {
+    console.error("MongoDB connection error:", err);
+  });
 
 const app = express();
 app.use(express.json());

@@ -10,7 +10,7 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { ENERGY_TYPES, PROJECT_STATUSES } from "@/lib/constants";
 
 interface ProjectFormProps {
-  project?: InsertProject & { id?: number };
+  project?: InsertProject & { id?: string };
   onSuccess: () => void;
 }
 
@@ -35,7 +35,7 @@ export function ProjectForm({ project, onSuccess }: ProjectFormProps) {
 
   const onSubmit = (data: InsertProject) => {
     if (isEditing && project?.id) {
-      updateProject({ id: project.id, data });
+      updateProject({ id: String(project.id), data });
     } else {
       createProject(data);
     }
@@ -84,7 +84,7 @@ export function ProjectForm({ project, onSuccess }: ProjectFormProps) {
             </SelectTrigger>
             <SelectContent>
               {ENERGY_TYPES.map(type => (
-                <SelectItem key={type.value} value={type.label}>
+                <SelectItem key={type.value} value={type.value}>
                   {type.label}
                 </SelectItem>
               ))}
@@ -138,7 +138,7 @@ export function ProjectForm({ project, onSuccess }: ProjectFormProps) {
             </SelectTrigger>
             <SelectContent>
               {PROJECT_STATUSES.map(status => (
-                <SelectItem key={status.value} value={status.label}>
+                <SelectItem key={status.value} value={status.value}>
                   {status.label}
                 </SelectItem>
               ))}

@@ -1,11 +1,14 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
 import { authService } from "./services/auth";
 import { energyAPIService } from "./services/energy-api";
 import { loginSchema, projectFiltersSchema, insertProjectSchema, insertUserSchema } from "@shared/schema";
 import { z } from "zod";
 import { createProjectsExcel } from "./utils/excel";
+import { MongoDBService } from "./services/mongodb.service";
+
+// Initialize MongoDB Service
+const storage = new MongoDBService();
 
 // Middleware to verify JWT token
 const authenticateToken = async (req: any, res: any, next: any) => {
@@ -72,7 +75,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/projects/:id", authenticateToken, async (req: any, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = req.params.id;
       const project = await storage.getProject(id);
       
       if (!project) {
@@ -97,7 +100,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put("/api/projects/:id", authenticateToken, requireAdmin, async (req: any, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = req.params.id;
       const updateData = insertProjectSchema.partial().parse(req.body);
       const project = await storage.updateProject(id, updateData);
       res.json(project);
@@ -108,7 +111,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete("/api/projects/:id", authenticateToken, requireAdmin, async (req: any, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = req.params.id;
       const success = await storage.deleteProject(id);
       
       if (!success) {
@@ -147,7 +150,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { projects } = await storage.getProjects({});
       const { createProjectsExcel } = await import('./utils/excel');
       
-      const buffer = await createProjectsExcel(projects);
+      // Convert MongoDB documents to plain objects if needed
+      const plainProjects = projects.map(project => project.toObject ? project.toObject() : project);
+      
+      const buffer = await createProjectsExcel(plainProjects);
       
       res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
       res.setHeader("Content-Disposition", `attachment; filename="projects_${new Date().toISOString().split('T')[0]}.xlsx"`);
@@ -233,7 +239,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put("/api/users/:id", authenticateToken, requireAdmin, async (req: any, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = req.params.id;
       const userData = insertUserSchema.partial().parse(req.body);
       const user = await storage.updateUser(id, userData);
       res.json(user);
@@ -244,7 +250,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete("/api/users/:id", authenticateToken, requireAdmin, async (req: any, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = req.params.id;
       await storage.deleteUser(id);
       res.json({ message: "User deleted successfully" });
     } catch (error: any) {
@@ -276,8 +282,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { projects } = await storage.getProjects({});
       
+      // Convert MongoDB documents to plain objects if needed
+      const plainProjects = projects.map(project => project.toObject ? project.toObject() : project);
+      
       // Use the Excel utility to create an Excel file
-      const buffer = await createProjectsExcel(projects);
+      const buffer = await createProjectsExcel(plainProjects);
       
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', 'attachment; filename="renewable_energy_projects.xlsx"');
@@ -314,11 +323,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 function getEnergyTypeColor(type: string): string {
   const colors: { [key: string]: string } = {
-    Solar: "#FF9800",
-    Wind: "#1976D2",
-    Hydro: "#2196F3",
-    Biomass: "#4CAF50",
-    Geothermal: "#9C27B0",
+    solar: "#FF9800",
+    wind: "#1976D2",
+    hydro: "#2196F3",
+    biomass: "#4CAF50",
+    geothermal: "#9C27B0",
+    other: "#666666"
   };
   return colors[type] || "#666666";
 }
