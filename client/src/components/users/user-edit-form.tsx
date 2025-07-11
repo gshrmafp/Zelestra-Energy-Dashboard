@@ -36,7 +36,7 @@ export function UserEditForm({ user, onSuccess }: UserEditFormProps) {
 
   const onSubmit = async (data: UserEditFormData) => {
     const { id, ...updateData } = data;
-    updateUser({ id, data: updateData });
+    updateUser({ id, user: updateData });
     onSuccess();
   };
 

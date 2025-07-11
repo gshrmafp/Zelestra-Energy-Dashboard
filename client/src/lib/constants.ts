@@ -8,9 +8,9 @@ export const ENERGY_TYPES = [
 
 export const PROJECT_STATUSES = [
   { value: "operational", label: "Operational" },
-  { value: "construction", label: "Under Construction" },
+  { value: "in-progress", label: "Under Construction" },
   { value: "planning", label: "Planning" },
-  { value: "cancelled", label: "Cancelled" },
+  { value: "decommissioned", label: "Decommissioned" },
 ] as const;
 
 export const LOCATIONS = [
@@ -43,16 +43,17 @@ export const SORT_OPTIONS = [
 export const ITEMS_PER_PAGE = 10;
 
 export const ENERGY_TYPE_COLORS = {
-  Solar: "#FF9800",
-  Wind: "#1976D2",
-  Hydro: "#2196F3",
-  Biomass: "#4CAF50",
-  Geothermal: "#9C27B0",
+  solar: "#FF9800",
+  wind: "#1976D2",
+  hydro: "#2196F3",
+  biomass: "#4CAF50",
+  geothermal: "#9C27B0",
+  other: "#666666"
 } as const;
 
 export const STATUS_COLORS = {
-  Operational: "bg-green-100 text-green-800",
-  Construction: "bg-yellow-100 text-yellow-800",
-  Planning: "bg-blue-100 text-blue-800",
-  Cancelled: "bg-red-100 text-red-800",
+  operational: "bg-green-100 text-green-800",
+  "in-progress": "bg-yellow-100 text-yellow-800",
+  planning: "bg-blue-100 text-blue-800",
+  decommissioned: "bg-red-100 text-red-800",
 } as const;

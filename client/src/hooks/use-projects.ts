@@ -53,7 +53,7 @@ export function useProjects(filters: ProjectFilters = {}) {
   });
 
   const updateProjectMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: number; data: Partial<InsertProject> }) => {
+    mutationFn: async ({ id, data }: { id: string; data: Partial<InsertProject> }) => {
       const response = await apiRequest("PUT", `/api/projects/${id}`, data);
       return response.json();
     },
@@ -75,7 +75,7 @@ export function useProjects(filters: ProjectFilters = {}) {
   });
 
   const deleteProjectMutation = useMutation({
-    mutationFn: async (id: number) => {
+    mutationFn: async (id: string) => {
       const response = await apiRequest("DELETE", `/api/projects/${id}`);
       return response.json();
     },

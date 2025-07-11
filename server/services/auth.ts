@@ -1,7 +1,9 @@
 import { compare, hash } from "bcrypt";
 import jwt from "jsonwebtoken";
 import { AuthUser, LoginCredentials } from "@shared/schema";
-import { storage } from "../storage";
+import { MongoDBService } from "./mongodb.service";
+
+const storage = new MongoDBService();
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "24h";
@@ -14,16 +16,15 @@ export class AuthService {
       throw new Error("Invalid credentials");
     }
 
-    // For demo purposes, simple password check
-    // In production, use bcrypt
-    const isValidPassword = user.password === credentials.password;
+    // Use bcrypt to compare passwords
+    const isValidPassword = await user.comparePassword(credentials.password);
     
     if (!isValidPassword) {
       throw new Error("Invalid credentials");
     }
 
-    const authUser: AuthUser = {
-      id: user.id,
+    const authUser = {
+      id: user._id.toString(),
       email: user.email,
       name: user.name,
       role: user.role,

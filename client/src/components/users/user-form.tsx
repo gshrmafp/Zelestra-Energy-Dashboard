@@ -29,7 +29,7 @@ export function UserForm({ user, onSuccess }: UserFormProps) {
 
   const onSubmit = (data: InsertUser) => {
     if (isEditing && user?.id) {
-      updateUser({ id: user.id, data });
+      updateUser({ id: user.id, user: data });
     } else {
       createUser(data);
     }

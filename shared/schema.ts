@@ -35,6 +35,18 @@ export const loginSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
+export type AuthUser = {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+};
+
+export type LoginCredentials = {
+  email: string;
+  password: string;
+};
+
 export const insertProjectSchema = createInsertSchema(projects).omit({
   id: true,
   createdAt: true,
@@ -59,7 +71,7 @@ export type InsertProject = z.infer<typeof insertProjectSchema>;
 export type ProjectFilters = z.infer<typeof projectFiltersSchema>;
 
 export interface AuthUser {
-  id: number;
+  id: string; // Changed to string for MongoDB compatibility
   email: string;
   name: string;
   role: string;

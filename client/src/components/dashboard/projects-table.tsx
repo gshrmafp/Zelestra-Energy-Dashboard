@@ -25,7 +25,8 @@ export function ProjectsTable({ searchQuery }: ProjectsTableProps) {
   });
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<any>(null);
 
   const { projects, total, isLoading, deleteProject, isDeleting } = useProjects(filters);
 
@@ -50,7 +51,7 @@ export function ProjectsTable({ searchQuery }: ProjectsTableProps) {
     setFilters(prev => ({ ...prev, page }));
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: string) => {
     if (confirm("Are you sure you want to delete this project?")) {
       deleteProject(id);
     }
@@ -69,6 +70,16 @@ export function ProjectsTable({ searchQuery }: ProjectsTableProps) {
   const handleCreateSuccess = () => {
     setIsCreateDialogOpen(false);
   };
+  
+  const handleView = (project: Project) => {
+    setSelectedProject(project);
+    setIsViewDialogOpen(true);
+  };
+  
+  const handleViewClose = () => {
+    setIsViewDialogOpen(false);
+    setSelectedProject(null);
+  };
 
   // Update search when prop changes
   if (searchQuery !== filters.search) {
@@ -83,24 +94,30 @@ export function ProjectsTable({ searchQuery }: ProjectsTableProps) {
   };
 
   const getStatusBadge = (status: string) => {
-    const variants: { [key: string]: any } = {
-      Operational: "default",
-      Construction: "secondary",
-      Planning: "outline",
-      Cancelled: "destructive",
+    const statusMap: { [key: string]: { variant: "default" | "secondary" | "outline" | "destructive", label: string } } = {
+      'operational': { variant: "default", label: "Operational" },
+      'in-progress': { variant: "secondary", label: "Under Construction" },
+      'planning': { variant: "outline", label: "Planning" },
+      'decommissioned': { variant: "destructive", label: "Decommissioned" }
     };
-    return <Badge variant={variants[status] || "default"}>{status}</Badge>;
+    const statusConfig = statusMap[status] || { variant: "default", label: status };
+    return <Badge variant={statusConfig.variant}>{statusConfig.label}</Badge>;
   };
 
   const getEnergyTypeIcon = (type: string) => {
     const icons: { [key: string]: string } = {
-      Solar: "☀️",
-      Wind: "💨",
-      Hydro: "💧",
-      Biomass: "🌿",
-      Geothermal: "🌋",
+      solar: "☀️",
+      wind: "💨",
+      hydro: "💧",
+      biomass: "🌿",
+      geothermal: "🌋",
     };
     return icons[type] || "⚡";
+  };
+  
+  const getEnergyTypeLabel = (type: string) => {
+    const energyType = ENERGY_TYPES.find(t => t.value === type);
+    return energyType ? energyType.label : type;
   };
 
   const totalPages = Math.ceil(total / ITEMS_PER_PAGE);
@@ -242,7 +259,7 @@ export function ProjectsTable({ searchQuery }: ProjectsTableProps) {
                   </td>
                 </tr>
               ) : (
-                projects.map((project) => (
+                projects.map((project: Project) => (
                   <tr key={project.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
@@ -258,7 +275,9 @@ export function ProjectsTable({ searchQuery }: ProjectsTableProps) {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <Badge variant="secondary">{project.energyType}</Badge>
+                      <Badge variant="secondary">
+                        {getEnergyTypeLabel(project.energyType)}
+                      </Badge>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {parseFloat(project.capacity).toLocaleString()}
@@ -273,7 +292,7 @@ export function ProjectsTable({ searchQuery }: ProjectsTableProps) {
                       {project.year}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                      <Button variant="ghost" size="sm">
+                      <Button variant="ghost" size="sm" onClick={() => handleView(project)}>
                         <Eye className="w-4 h-4" />
                       </Button>
                       {isAdmin && (
@@ -284,7 +303,7 @@ export function ProjectsTable({ searchQuery }: ProjectsTableProps) {
                           <Button 
                             variant="ghost" 
                             size="sm"
-                            onClick={() => handleDelete(project.id)}
+                            onClick={() => handleDelete(String(project.id))}
                             disabled={isDeleting}
                           >
                             <Trash2 className="w-4 h-4 text-red-600" />
@@ -380,6 +399,64 @@ export function ProjectsTable({ searchQuery }: ProjectsTableProps) {
               project={selectedProject} 
               onSuccess={handleEditSuccess} 
             />
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* View Dialog */}
+      {selectedProject && (
+        <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Project Details</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <p className="font-medium text-sm text-gray-500">Project Name</p>
+                  <p className="text-lg">{selectedProject.name}</p>
+                </div>
+                <div className="space-y-2">
+                  <p className="font-medium text-sm text-gray-500">Owner</p>
+                  <p className="text-lg">{selectedProject.owner}</p>
+                </div>
+                <div className="space-y-2">
+                  <p className="font-medium text-sm text-gray-500">Energy Type</p>
+                  <div>
+                    <Badge variant="secondary">
+                      {getEnergyTypeLabel(selectedProject.energyType)}
+                    </Badge>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <p className="font-medium text-sm text-gray-500">Capacity (MW)</p>
+                  <p className="text-lg">{parseFloat(selectedProject.capacity).toLocaleString()}</p>
+                </div>
+                <div className="space-y-2">
+                  <p className="font-medium text-sm text-gray-500">Location</p>
+                  <p className="text-lg">{selectedProject.location}</p>
+                </div>
+                <div className="space-y-2">
+                  <p className="font-medium text-sm text-gray-500">Status</p>
+                  <div>{getStatusBadge(selectedProject.status)}</div>
+                </div>
+                <div className="space-y-2">
+                  <p className="font-medium text-sm text-gray-500">Year</p>
+                  <p className="text-lg">{selectedProject.year}</p>
+                </div>
+                {selectedProject.latitude && selectedProject.longitude && (
+                  <div className="space-y-2">
+                    <p className="font-medium text-sm text-gray-500">Coordinates</p>
+                    <p className="text-lg">
+                      {selectedProject.latitude}, {selectedProject.longitude}
+                    </p>
+                  </div>
+                )}
+              </div>
+              <div className="flex justify-end mt-6">
+                <Button onClick={handleViewClose}>Close</Button>
+              </div>
+            </div>
           </DialogContent>
         </Dialog>
       )}
