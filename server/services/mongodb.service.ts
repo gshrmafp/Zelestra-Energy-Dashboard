@@ -1,19 +1,46 @@
+import mongoose from 'mongoose';
 import { ProjectFilters, ProjectStats } from "@shared/schema";
 import User, { IUser } from "../models/user.model";
 import Project, { IProject } from "../models/project.model";
 
+// We'll only connect if we haven't already
+let isConnected = false;
+
+// Initialize MongoDB connection only if not already connected
+const connectToMongoDB = async () => {
+  if (!isConnected && mongoose.connection.readyState !== 1) {
+    try {
+      await mongoose.connect(process.env.MONGODB_URI as string, {});
+      isConnected = true;
+      console.log('Connected to MongoDB');
+    } catch (error) {
+      console.error('MongoDB connection error:', error);
+    }
+  }
+};
+
 export class MongoDBService {
+  constructor() {
+    // Ensure connection on service instantiation
+    connectToMongoDB();
+  }
+
   // User operations
   async getUser(id: string): Promise<IUser | null> {
+    await connectToMongoDB();
     return User.findById(id);
   }
 
   async getUserByEmail(email: string): Promise<IUser | null> {
+    await connectToMongoDB();
     return User.findOne({ email });
   }
 
   async createUser(userData: { email: string, password: string, name: string, role?: string }): Promise<IUser> {
-    const user = new User(userData);
+    const user = new User({
+      ...userData,
+      role: userData.role || 'user'
+    });
     return user.save();
   }
 
@@ -45,6 +72,20 @@ export class MongoDBService {
   }
 
   async updateUser(id: string, userData: Partial<{ email: string, password: string, name: string, role: string }>): Promise<IUser | null> {
+    // If updating password, ensure we use the User model's save method to trigger the password hash middleware
+    if (userData.password) {
+      const user = await User.findById(id);
+      if (!user) return null;
+      
+      if (userData.email) user.email = userData.email;
+      if (userData.password) user.password = userData.password;
+      if (userData.name) user.name = userData.name;
+      if (userData.role) user.role = userData.role;
+      
+      return user.save();
+    }
+    
+    // For non-password updates, we can use findByIdAndUpdate
     return User.findByIdAndUpdate(id, userData, { new: true });
   }
 

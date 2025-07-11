@@ -203,8 +203,11 @@ async function seedDatabase() {
     await Project.deleteMany({});
     console.log('Cleared projects collection');
     
-    // Insert sample users
-    await User.insertMany(users);
+    // Insert sample users one by one to trigger password hashing middleware
+    for (const userData of users) {
+      const user = new User(userData);
+      await user.save();
+    }
     console.log('Added sample users');
     
     // Insert sample projects

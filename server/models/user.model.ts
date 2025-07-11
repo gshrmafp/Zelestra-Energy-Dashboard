@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document, Model } from 'mongoose';
 import bcrypt from 'bcrypt';
 
 export interface IUser extends Document {
@@ -7,10 +7,15 @@ export interface IUser extends Document {
   name: string;
   role: string;
   createdAt: Date;
+  _id: string;
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
-const UserSchema: Schema = new Schema({
+interface IUserModel extends Model<IUser> {
+  comparePasswords(plaintext: string, hash: string): Promise<boolean>;
+}
+
+const UserSchema = new Schema({
   email: {
     type: String,
     required: true,
@@ -51,9 +56,18 @@ UserSchema.pre<IUser>('save', async function(next) {
   }
 });
 
-// Compare password method
+// Method to compare password
 UserSchema.methods.comparePassword = async function(candidatePassword: string): Promise<boolean> {
-  return bcrypt.compare(candidatePassword, this.password);
+  try {
+    console.log("Comparing password:", candidatePassword);
+    console.log("Stored hashed password:", this.password);
+    const result = await bcrypt.compare(candidatePassword, this.password);
+    console.log("bcrypt.compare result:", result);
+    return result;
+  } catch (error) {
+    console.error("Error comparing password:", error);
+    return false;
+  }
 };
 
 export default mongoose.model<IUser>('User', UserSchema);
