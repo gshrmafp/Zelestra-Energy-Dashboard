@@ -2,35 +2,6 @@
 
 ![Zelestra Logo](client/src/assets/images/zelestra.png)
 
-## 📚 Table of Contents
-
-* [What is Zelestra?](#what-is-zelestra)
-* [Why Zelestra?](#why-zelestra)
-* [How to Use It (Step-by-Step)](#how-to-use-it-step-by-step)
-* [Tech Stack](#tech-stack)
-* [Project Structure](#project-structure)
-* [APIs & DB](#apis--db)
-* [Dev & Deployment](#dev--deployment)
-* [Contribution Guide](#contribution-guide)
-
----
-
-## 📌 What is Zelestra?
-
-Zelestra is a user-friendly web platform for managing renewable energy projects. It helps teams track project progress, visualize capacity data, and organize everything in one place.
-
----
-
-## 🌟 Why Zelestra?
-
-* Track solar, wind & more energy projects
-* See real-time stats with interactive charts
-* Export your project data to Excel or CSV
-* Role-based access (Admin/User)
-* Search, filter, sort, and manage with ease
-
----
-
 ## 🚀 How to Use It (Step-by-Step)
 
 ### 1. **Clone the Project**
