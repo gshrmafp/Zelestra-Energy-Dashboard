@@ -28,12 +28,6 @@ SESSION_SECRET=your-session-secret
 NODE_ENV=development
 ```
 
-### 4. **Set Up the Database**
-
-```bash
-npm run db:push
-```
-
 ### 5. **Start the Development Server**
 
 ```bash
@@ -43,7 +37,6 @@ npm run dev
 ### 6. **Access the App**
 
 * Web UI: [http://localhost:5001](http://localhost:5001)
-* API: [http://localhost:5001/api](http://localhost:5001/api)
 
 ---
 
@@ -58,7 +51,7 @@ npm run dev
 ### **Backend**
 
 * Node.js + Express + TypeScript
-* Drizzle ORM + PostgreSQL
+* Drizzle ORM + MongoDB
 * JWT + Passport.js + bcrypt
 
 ### **Other Tools**
@@ -119,45 +112,6 @@ Zelestra-web/
 ```bash
 npm run dev       # Start dev server
 npm run build     # Build for production
-npm run start     # Run production server
-npm run db:push   # Push DB schema
-```
-
-### Docker Support
-
-```dockerfile
-FROM node:18-alpine
-WORKDIR /app
-COPY . .
-RUN npm install && npm run build
-EXPOSE 5001
-CMD ["npm", "start"]
-```
-
----
-
-## 🤝 Contribution Guide
-
-1. Fork this repo
-2. Create a new branch for your feature/fix
-3. Commit your changes clearly
-4. Open a pull request
-
-#### ✅ Example Commit Messages
-
-```
-feat: added project filter by location
-fix: fixed session expiration bug
-docs: updated API instructions
-```
-
----
-
-## 🪪 License
-
-MIT License — [View License](LICENSE)
-
----
 
 ## 💬 Support
 
@@ -166,4 +120,4 @@ MIT License — [View License](LICENSE)
 
 ---
 
-**Made with 💚 by the Zelestra Team**
+**Made with 💚 by the Gourav Sharma**
