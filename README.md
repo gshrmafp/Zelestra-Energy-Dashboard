@@ -7,8 +7,8 @@
 ### 1. **Clone the Project**
 
 ```bash
-git clone <repository-url>
-cd Zelestra-web
+git clone https://github.com/gshrmafp/Zelestra-Energy-Dashboard.git
+cd Zelestra-Energy-Dashboard
 ```
 
 ### 2. **Install Dependencies**
@@ -22,7 +22,7 @@ npm install
 Create a `.env` file:
 
 ```env
-DATABASE_URL=postgresql://user:pass@localhost:5432/zelestra
+DATABASE_URL=mongoDb://user:pass@localhost:5432/zelestra
 JWT_SECRET=your-jwt-secret
 SESSION_SECRET=your-session-secret
 NODE_ENV=development
